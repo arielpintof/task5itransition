@@ -1,0 +1,50 @@
+﻿@using task5itransition.Pages.Models
+
+<div>
+    <FluentSlider Min="0"
+                  Max="10"
+                  Step="0.1"
+                  @bind-Value="@Error"
+                  @onmouseup="OnSliderMouseUp"
+                  Style="width: 200px"
+                  ImmediateDelay="600"
+                  Label="Error">
+        <FluentSliderLabel Position="0">0</FluentSliderLabel>
+        <FluentSliderLabel Position="1">1</FluentSliderLabel>
+        <FluentSliderLabel Position="2">2</FluentSliderLabel>
+        <FluentSliderLabel Position="3">3</FluentSliderLabel>
+        <FluentSliderLabel Position="4">4</FluentSliderLabel>
+        <FluentSliderLabel Position="5">5</FluentSliderLabel>
+        <FluentSliderLabel Position="6">6</FluentSliderLabel>
+        <FluentSliderLabel Position="7">7</FluentSliderLabel>
+        <FluentSliderLabel Position="8">8</FluentSliderLabel>
+        <FluentSliderLabel Position="9">9</FluentSliderLabel>
+        <FluentSliderLabel Position="10">10</FluentSliderLabel>
+    </FluentSlider>
+    <FluentNumberField @bind-Value="@Error" Style="width: 75px"></FluentNumberField>
+</div>
+
+@code {
+    [CascadingParameter] public required Settings Settings { get; set; }
+
+    private double _error = 0;
+
+    private double Error
+    {
+        get => _error;
+        set
+        {
+            if (Math.Abs(_error - value) < 0.1) return;
+            _error = value;
+            // Vinculamos el valor al objeto Settings.
+            Settings.Error = _error;
+        }
+    }
+
+    // Este método se ejecutará cuando el mouse se suelte en el slider.
+    private void OnSliderMouseUp(MouseEventArgs e)
+    {
+        Console.WriteLine($"Valor al soltar el slider: {Error}");
+        // Aquí podrías hacer otras acciones necesarias al soltar el slider.
+    }
+}

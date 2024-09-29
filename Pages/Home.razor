@@ -1,0 +1,69 @@
+﻿@page "/"
+@using System.ComponentModel
+@using task5itransition.Data
+@using task5itransition.Pages.Models
+@using task5itransition.Pages.Components
+
+<PageTitle>Home</PageTitle>
+
+<div class="d-flex gap-5 py-2 mb-2">
+    <RegionSelect/>
+    <ErrorSlider/>
+    <SeedInput/>
+</div>
+
+@if (Users != null)
+{
+    <div style="height: 700px; overflow-y: scroll; scrollbar-width: none;"> 
+        <FluentDataGrid @ref="grid"
+                        Items="Users"
+                        Virtualize="true"
+                        Style="height: 100%;"
+                        >
+            <ChildContent>
+                <PropertyColumn Property="@(p => p.Id)" Width="100px" Title="Index" Sortable="true"/>
+                <PropertyColumn Property="@(p => p.UniqueId)" Width="100px" Title="Id" Sortable="true"/>
+                <PropertyColumn Property="@(p => $"{p.Name} {p.MiddleName} {p.LastName}")" Title="Name" Sortable="true"/>
+                <PropertyColumn Property="@(p => p.Address)" Title="Adress" Sortable="true"/>
+                <PropertyColumn Property="@(p => p.Phone)" Width="350px" Title="Phone" Sortable="true"/>
+            </ChildContent>
+            <EmptyContent>
+                <FluentIcon Value="@(new Icons.Filled.Size24.Crown())" Color="@Color.Accent"/>&nbsp; Nothing to see here. Carry on!
+            </EmptyContent>
+            <LoadingContent>
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center">
+                    Loading...<br/>
+                    <FluentProgress Width="240px"/>
+                </FluentStack>
+            </LoadingContent>
+        </FluentDataGrid>
+    </div>
+}
+
+
+@code {
+    [CascadingParameter] public required Settings Settings { get; set; }
+    private IQueryable<User>? Users { get; set; }
+    FluentDataGrid<User>? grid;
+    bool _clearItems = false;
+
+    const int MaxUsers = 1000;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Settings.PropertyChanged += OnSettingsChanged;
+        var userGenerator = await new UserGenerator(Settings.Region).Generate(MaxUsers, Settings.Seed, Settings.Error);
+        Users = userGenerator.AsQueryable();
+    }
+
+    private async void OnSettingsChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        _clearItems = false;
+        Users = null;
+        grid?.SetLoadingState(true);
+        var userGenerator = await new UserGenerator(Settings.Region).Generate(MaxUsers, Settings.Seed, Settings.Error);
+        Users = userGenerator.AsQueryable();
+        grid?.SetLoadingState(false);
+    }
+
+}

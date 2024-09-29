@@ -1,0 +1,32 @@
+﻿@using task5itransition.Pages.Models
+
+<div class="flex flex-row">
+    <div class="flex flex-row  gap-2">
+        <FluentNumberField @bind-Value="Seed" Label="Seed" />
+    </div>
+</div>
+<FluentButton Class="mt-4" Appearance="Appearance.Accent" @onclick="RandomizeSeed">Randomize</FluentButton>
+
+@code {
+    [CascadingParameter] public required Settings Settings { get; set; }
+
+    private int _seed = 123;
+
+    private int Seed
+    {
+        get => _seed;
+        set
+        {
+            if (_seed == value) return;
+            _seed = value;
+            Settings.Seed = value;
+        }
+    }
+
+    void RandomizeSeed()
+    {
+        var random = new Random();
+        Seed = random.Next(100000);
+    }
+
+}

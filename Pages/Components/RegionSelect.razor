@@ -1,0 +1,36 @@
+﻿@using task5itransition.Pages.Models
+
+<div>
+    <FluentSelect Items="@_options"
+                  Label="Region"
+                  OptionText="@(i => i.Text)"
+                  OptionValue="@(i => i.Value)"
+                  OptionSelected="@(i => i.Selected)"
+                  @bind-Value="@SelectedValue"/>
+</div>
+
+
+@code {
+    [CascadingParameter] public required Settings Settings { get; set; }
+
+    private string? _selectedValue = "de";
+
+    private string? SelectedValue
+    {
+        get => _selectedValue;
+        set
+        {
+            if (_selectedValue == value) return;
+            _selectedValue = value;
+            Settings.Region = _selectedValue;
+        }
+    }
+
+    static List<Option<string>> _options =
+    [
+        new Option<string> { Value = "de", Text = "German", Selected = true },
+        new Option<string> { Value = "es", Text = "Spanish" },
+        new Option<string> { Value = "en", Text = "English" },
+    ];
+
+}
